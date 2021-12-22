@@ -106,7 +106,7 @@ source devel/setup.bash
 roslaunch ldlidar ld06.launch
 ```
 
-## 3. 数据可视化
+## step 3: Data visualization
 
 -  After making sure that the compilation and operation are successful, please open another terminal and run `rosrun rviz rviz` to open the ROS rviz tool.
 

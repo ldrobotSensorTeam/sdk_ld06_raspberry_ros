@@ -1,4 +1,0 @@
-#!/bin/sh
-
-rm -r devel build
-rm ./src/CMakeLists.txt

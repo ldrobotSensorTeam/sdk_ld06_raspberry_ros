@@ -3,13 +3,18 @@ project(ldlidar)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
+SET(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+message(STATUS "optional:-std=c++11")
+
+# set (CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}  -g ")
+# set (CMAKE_VERBOSE_MAKEFILE ON)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  sensor_msgs
+    roscpp
+    sensor_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -120,26 +125,21 @@ ${catkin_INCLUDE_DIRS}
 )
 
 ## Get current directory files
-aux_source_directory(./src file_name)
+#aux_source_directory(. file_name)
+#if(file_name MATCHES "slbf.cpp")
+#  add_definitions(-D"USE_SLBF")
+#  message("-- #define USE_SLBF")
+#endif()
 
-message(${file_name})
-
-if(file_name MATCHES "slbf.cpp")
-  add_definitions(-D"USE_SLBF")
-  message("-- #define USE_SLBF")
-endif()
-
-if(file_name MATCHES "slbi.cpp")
-  add_definitions(-D"USE_SLBI")
-  message("-- #define USE_SLBI")
-endif()
-
-SET(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+#if(file_name MATCHES "slbi.cpp")
+#  add_definitions(-D"USE_SLBI")
+#  message("-- #define USE_SLBI")
+#endif()
 
 file(GLOB  MAIN_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 add_executable(ldlidar  ${MAIN_SRC})
-target_link_libraries(ldlidar pthread udev wiringPi  ${catkin_LIBRARIES})
+target_link_libraries(ldlidar pthread ${catkin_LIBRARIES})
 
 
 ## Declare a C++ library

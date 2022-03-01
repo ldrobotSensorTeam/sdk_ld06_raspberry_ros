@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 	n.getParam("port_name", port_name);
 	n.getParam("frame_id", frame_id);
 
-  std::cout << "[ldrobot] SDK Pack Version is " << "v2.0.0" << std::endl;
+  std::cout << "[ldrobot] SDK Pack Version is " << "v2.0.1" << std::endl;
 	std::cout << "[ldrobot] "
             << "<topic_name>: " << topic_name
             << " <port_name>: "  << port_name

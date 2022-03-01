@@ -126,7 +126,7 @@ bool LiPkg::Parse(const uint8_t *data, long len) {
     if (AnalysisOne(data[i])) {
       // parse a package is success
       double diff = (pkg.end_angle / 100 - pkg.start_angle / 100 + 360) % 360;
-      if (diff > (double)pkg.speed * POINT_PER_PACK / 2300 * 3 / 2) {
+      if (diff > (double)pkg.speed * POINT_PER_PACK / kPointFrequence * 3 / 2) {
         error_times_++;
       } else {
         speed_ = pkg.speed; // Degrees per second
@@ -209,7 +209,7 @@ void LiPkg::ToLaserscan(std::vector<PointData> src) {
   angle_max = ANGLE_TO_RADIAN(src.back().angle);
   range_min = 0.02;
   range_max = 12;
-  angle_increment = ANGLE_TO_RADIAN(speed_ / 4500);
+  angle_increment = ANGLE_TO_RADIAN(speed_ / kPointFrequence);
   static uint16_t last_times_stamp = 0;
   uint16_t dealt_times_stamp = 0;
   uint16_t tmp_times_stamp = GetTimestamp();
@@ -220,42 +220,45 @@ void LiPkg::ToLaserscan(std::vector<PointData> src) {
   }
   last_times_stamp = tmp_times_stamp;
   // Calculate the number of scanning points
-  unsigned int beam_size = ceil((angle_max - angle_min) / angle_increment);
-  output.header.stamp = ros::Time::now();
-  output.header.frame_id = frame_id_;
-  output.angle_min = angle_min;
-  output.angle_max = angle_max;
-  output.range_min = range_min;
-  output.range_max = range_max;
-  output.angle_increment = angle_increment;
-  output.time_increment = dealt_times_stamp;
-  output.scan_time = 0.0;
-  // First fill all the data with Nan
-  output.ranges.assign(beam_size, std::numeric_limits<float>::quiet_NaN());
-  output.intensities.assign(beam_size, std::numeric_limits<float>::quiet_NaN());
+  if (speed_ > 0) {
+    unsigned int beam_size = static_cast<unsigned int>(ceil((angle_max - angle_min) / angle_increment));
+    output_.header.stamp = ros::Time::now();
+    output_.header.frame_id = frame_id_;
+    output_.angle_min = angle_min;
+    output_.angle_max = angle_max;
+    output_.range_min = range_min;
+    output_.range_max = range_max;
+    output_.angle_increment = angle_increment;
+    output_.time_increment = dealt_times_stamp;
+    output_.scan_time = 0.0;
+    // First fill all the data with Nan
+    output_.ranges.assign(beam_size, std::numeric_limits<float>::quiet_NaN());
+    output_.intensities.assign(beam_size, std::numeric_limits<float>::quiet_NaN());
 
-  int last_index = 0;
-  for (auto point : src) {
-    float range = point.distance / 1000.f;  // distance unit transform to meters
-    float angle = ANGLE_TO_RADIAN(point.angle);
-    int index = (int)((angle - output.angle_min) / output.angle_increment);
-    if (index >= 0 && index < beam_size) {
-      // If the current content is Nan, it is assigned directly
-      if (std::isnan(output.ranges[index])) {
-        output.ranges[index] = range;
-        int err = index - last_index;
-				if (err == 2){
-					output.ranges[index - 1] = range;
-					output.intensities[index - 1] = point.confidence;
-				}
-      } else { // Otherwise, only when the distance is less than the current
-               //   value, it can be re assigned
-        if (range < output.ranges[index]) {
-          output.ranges[index] = range;
+    unsigned int last_index = 0;
+    for (auto point : src) {
+      float range = point.distance / 1000.f;  // distance unit transform to meters
+      float dir_angle = static_cast<float>(360.f - point.angle); // Lidar rotation data flow changed from clockwise to counterclockwise
+      float angle = ANGLE_TO_RADIAN(dir_angle); // Lidar angle unit form degree transform to radian
+      unsigned int index = (unsigned int)((angle - output_.angle_min) / output_.angle_increment);
+      if (index < beam_size) {
+        // If the current content is Nan, it is assigned directly
+        if (std::isnan(output_.ranges[index])) {
+          output_.ranges[index] = range;
+          unsigned int err = index - last_index;
+          if (err == 2){
+            output_.ranges[index - 1] = range;
+            output_.intensities[index - 1] = point.intensity;
+          }
+        } else { // Otherwise, only when the distance is less than the current
+                //   value, it can be re assigned
+          if (range < output_.ranges[index]) {
+            output_.ranges[index] = range;
+          }
         }
+        output_.intensities[index] = point.intensity;
+        last_index = index;
       }
-      output.intensities[index] = point.confidence;
-      last_index = index;
     }
   }
 }

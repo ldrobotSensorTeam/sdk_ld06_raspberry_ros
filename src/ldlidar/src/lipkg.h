@@ -31,9 +31,6 @@
 
 #include "pointdata.h"
 
-#define ANGLE_TO_RADIAN(angle) ((angle)*3141.59 / 180000)
-#define RADIAN_TO_ANGLED(angle) ((angle)*180000 / 3141.59)
-
 enum {
   PKG_HEADER = 0x54,
   PKG_VER_LEN = 0x2C,
@@ -42,7 +39,7 @@ enum {
 
 typedef struct __attribute__((packed)) {
   uint16_t distance;
-  uint8_t confidence;
+  uint8_t intensity;
 } LidarPointStructDef;
 
 typedef struct __attribute__((packed)) {
@@ -79,7 +76,7 @@ class LiPkg {
   // combine stantard data into data frames and calibrate
   bool AssemblePacket();  
   // Get sensor_msg/LaserScan type data
-  sensor_msgs::LaserScan GetLaserScan() { return output; }
+  sensor_msgs::LaserScan GetLaserScan() { return output_; }
 
  private:
   const int kPointFrequence = 4500;
@@ -93,7 +90,7 @@ class LiPkg {
   std::vector<PointData> frame_tmp_;
   bool is_pkg_ready_;
   bool is_frame_ready_;
-  sensor_msgs::LaserScan output;
+  sensor_msgs::LaserScan output_;
   // Lidar frame data tranfrom to  sensor_msg/LaserScan type data
   void ToLaserscan(std::vector<PointData> src);
 };

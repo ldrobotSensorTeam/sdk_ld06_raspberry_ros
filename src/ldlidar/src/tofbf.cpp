@@ -105,23 +105,23 @@ std::vector<PointData> Tofbf::NearFilter(
     if (n.size() < 3) {
       int c = 0;
       for (auto m : n) {
-        c += m.confidence;
+        c += m.intensity;
       }
       c /= n.size();
       if (c < kConfidenceSingle) continue;
     }
 
-    // Calculate the mean value of distance and confidence
+    // Calculate the mean value of distance and intensity
     double confidence_avg = 0;
     double dis_avg = 0;
     for (auto m : n) {
-      confidence_avg += m.confidence;
+      confidence_avg += m.intensity;
       dis_avg += m.distance;
     }
     confidence_avg /= n.size();
     dis_avg /= n.size();
 
-    // High confidence, no filtering
+    // High intensity, no filtering
     if (confidence_avg > kConfidenceLow) {
       normal.insert(normal.end(), n.begin(), n.end());
       continue;

@@ -1,5 +1,19 @@
+- [Statement](#Statement)
 - [中文](#操作指南)
 - [EN](#Instructions)
+# Statement
+- 此仓库已停止维护，新仓库如下：
+
+  - https://github.com/ldrobotSensorTeam/ldlidar_stl_ros
+
+  - https://gitee.com/ldrobotSensorTeam/ldlidar_stl_ros
+
+- This repository has stopped maintenance, the new repository is as follows:
+
+  - https://github.com/ldrobotSensorTeam/ldlidar_stl_ros
+
+  - https://gitee.com/ldrobotSensorTeam/ldlidar_stl_ros
+
 # 操作指南
 
 > 此SDK仅适用于深圳乐动机器人有限公司销售的激光雷达产品，产品型号为LDROBOT LiDAR LD06. 应用环境为ROS.
@@ -9,6 +23,8 @@
 ```bash
 cd ~
 git clone https://github.com/ldrobotSensorTeam/sdk_ld06_raspberry_ros.git
+
+git clone https://gitee.com/ldrobotSensorTeam/sdk_ld06_raspberry_ros.git
 ```
 
 ## 1. 设置

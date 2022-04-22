@@ -3,8 +3,7 @@
 #Date: 2020-12
 floder_name=$1
 null_name=" "
-if [ ${floder_name} == ${null_name} ]
-then
+if [ ${floder_name} == ${null_name} ];then
     echo "please input \"./ws_deploy.sh floder_name\""
 else
     floder_name="${floder_name}_`date +%Y%m%d-%H-%M`"
